@@ -38,6 +38,13 @@ typedef struct {
 	char *hash;
 } LibDetails;
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
+#ifndef VERSION
+#define VERSION unknown
+#endif
+
 int create_append_file(char *file_path, char *content);
 void create_my_build_config(char *config_file_path, char *project_name,
 							char *project_lang, char *compiler_path,
@@ -95,3 +102,5 @@ void add_local_lib(int lib_count, char **lib_link);
 void add_flag(int lib_count, char **lib_link);
 bool check_if_dep_path(const char *str);
 int remove_directory(Arena *arena, const char *path);
+char *read_current_version_from_file(Arena *arena);
+void update_version_file(char *version);

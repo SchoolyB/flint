@@ -83,7 +83,7 @@ int generate_compile_commands() {
 		yyjson_arr_iter iter;
 		success = yyjson_arr_iter_init(inc_arr, &iter);
 		if (!success) {
-			fprintf(stderr, "Non an iterator: include_paths\n");
+			fprintf(stderr, "Not an iterator: include_paths\n");
 			success = 0;
 			vector_free(include_paths);
 			goto CLEANUP;
@@ -196,10 +196,11 @@ int generate_compile_commands() {
 
 	if (!success) {
 		fprintf(stderr, "Failed to write %s: %s\n", output_file, write_err.msg);
-	} else {
+	}
+	/* else {
 		printf("Generated %s with %d source files\n", output_file,
 			   length(source_files));
-	}
+	}*/
 
 	vector_free(include_paths);
 	vector_free(source_files);

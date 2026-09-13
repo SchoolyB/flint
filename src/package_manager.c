@@ -120,6 +120,10 @@ void sync_dependency() {
 void add_library(char *libURL) {
 	Arena *local_arena = arena_init(1024);
 	char *url = get_modified_url(local_arena, libURL);
+	if (url == NULL) {
+		printf("[x] Invalid URL\n");
+		return;
+	}
 	yyjson_read_err err;
 	yyjson_doc *current_doc =
 		yyjson_read_file("./composition.json", 0, NULL, &err);
@@ -173,16 +177,24 @@ String *clone_lib(Arena *arena, char *libURL) {
 */
 
 LibDetails *clone_lib(Arena *arena, char *libURL, const char *hash) {
-	LibDetails *lib_details =
-		(LibDetails *)arena_alloc(arena, sizeof(LibDetails));
 	// @unknown will work for now, will change it later
 	// char *modified_url_temp =
 	// 	string(string_concat_cstr(arena, 2, libURL, "@unknown"));
 	// char *version_number = get_version_number(arena, modified_url_temp);
 	// char *url = get_modified_url(arena, modified_url_temp);
 	char *version_number = get_version_number(arena, libURL);
+	if (version_number == NULL) {
+		printf("[x] Version details missing\n");
+		return NULL;
+	}
 	char *url = get_modified_url(arena, libURL);
 	char *repo_name = get_repo_name(arena, url);
+
+	if (url == NULL || repo_name == NULL) {
+		printf("[x] Invalid URL\n");
+		return NULL;
+	}
+
 	char *target_dir =
 		string(string_concat_cstr(arena, 2, "./deps/", repo_name));
 	char *sink_path = ">/dev/null 2>&1";
@@ -211,6 +223,8 @@ LibDetails *clone_lib(Arena *arena, char *libURL, const char *hash) {
 
 	char *ref_hash = get_lib_hash(arena, target_dir);
 	char *fetched_version = get_tag_from_hash(arena, target_dir, ref_hash);
+	LibDetails *lib_details =
+		(LibDetails *)arena_alloc(arena, sizeof(LibDetails));
 	lib_details->repo_name = repo_name;
 	lib_details->version = fetched_version;
 	lib_details->hash = ref_hash;
@@ -282,6 +296,11 @@ void fetch_library(Vector *v, char *libURL, yyjson_mut_val *sync_src,
 
 	str_arena = arena_init(2048);
 	LibDetails *lib_details = clone_lib(str_arena, libURL, hash);
+
+	if (lib_details == NULL) {
+		arena_free(&str_arena);
+		return;
+	}
 
 	String *config_path = string_concat_cstr(
 		str_arena, 3, "./deps/", lib_details->repo_name, "/composition.json");
@@ -633,6 +652,7 @@ void fetch_library(Vector *v, char *libURL, yyjson_mut_val *sync_src,
 						  false, hash);
 		}
 	}
+	generate_compile_commands();
 	vector_free(flag_vec);
 	vector_free(lib_link_vec);
 	vector_free(src_vec);

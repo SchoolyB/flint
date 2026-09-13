@@ -228,3 +228,111 @@ bool file_exists(const char *file_name) {
 	}
 	return false;
 }
+
+int copy_file(const char *src_path, const char *dest_path) {
+	FILE *src = fopen(src_path, "rb");
+	if (src == NULL) {
+		perror("Error opening source file");
+		return -1;
+	}
+
+	FILE *dest = fopen(dest_path, "wb");
+	if (dest == NULL) {
+		perror("Error opening/creating destination file");
+		fclose(src);
+		return -1;
+	}
+
+	char buffer[BUFFER_SIZE];
+
+	size_t bytes_read;
+
+	while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, src)) > 0) {
+		size_t bytes_written = fwrite(buffer, 1, bytes_read, dest);
+		if (bytes_written < bytes_read) {
+			perror("Error writing to destination file");
+			fclose(src);
+			fclose(dest);
+			return -1;
+		}
+	}
+
+	fclose(src);
+	fclose(dest);
+	return 0;
+}
+
+int remove_directory(Arena *arena, const char *path) {
+	DIR *d = opendir(path);
+	size_t path_len = strlen(path);
+	int r = -1;
+
+	if (d) {
+		struct dirent *p;
+		r = 0;
+
+		while (!r && (p = readdir(d))) {
+			int r2 = -1;
+			char *buf;
+			size_t len;
+
+			if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
+				continue;
+			}
+
+			len = path_len + strlen(p->d_name) + 2;
+			buf = arena_alloc(arena, len);
+
+			if (buf) {
+				struct stat statbuf;
+				snprintf(buf, len, "%s/%s", path, p->d_name);
+
+				if (!stat(buf, &statbuf)) {
+					if (S_ISDIR(statbuf.st_mode)) {
+						r2 = remove_directory(arena, buf);
+					} else {
+						r2 = unlink(buf);
+					}
+				}
+				// free(buf);
+			}
+			r = r2;
+		}
+		closedir(d);
+	}
+
+	if (!r) {
+		r = rmdir(path);
+	}
+	return r;
+}
+
+char *read_current_version_from_file(Arena *arena) {
+	FILE *file = fopen("./build/.cache/VERSION", "r");
+	if (!file) {
+		return arena_strdup(arena, "unknown");
+	}
+
+	char buffer[256];
+	if (!fgets(buffer, sizeof(buffer), file)) {
+		fclose(file);
+		return arena_strdup(arena, "unknown");
+	}
+	fclose(file);
+
+	buffer[strcspn(buffer, "\r\n")] = '\0';
+
+	// fclose(file);
+	return arena_strdup(arena, buffer);
+}
+
+void update_version_file(char *version) {
+	FILE *file = fopen("./build/.cache/VERSION", "w");
+	if (!file) {
+		perror("[x] Failed to open/create file\n");
+		return;
+	}
+
+	fputs(version, file);
+	fclose(file);
+}

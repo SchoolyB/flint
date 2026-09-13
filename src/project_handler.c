@@ -1,3 +1,4 @@
+#include "yyjson.h"
 #include <flint.h>
 
 int check_available_archiever(String *cmd) {
@@ -30,7 +31,7 @@ int init_project() {
 	Arena *str_arena;
 	String *dep_dir, *project_name, *project_dir, *project_lang, *dep_incl,
 		*dep_lib, *compiler_path, *project_type;
-	int ret, dir_create_status, file_create_status;
+	int ret, dir_create_status = 0, file_create_status = 0;
 	bool isExec;
 
 	isExec = true;
@@ -65,10 +66,12 @@ int init_project() {
 
 	dep_dir = string_concat_cstr(str_arena, 2, string(project_dir), "/deps");
 
-	dir_create_status = MAKE_DIR(string(dep_dir));
-	if (dir_create_status != 0) {
-		ret = 1;
-		goto CLEANUP;
+	if (!directory_exists(string(dep_dir))) {
+		dir_create_status = MAKE_DIR(string(dep_dir));
+		if (dir_create_status != 0) {
+			ret = 1;
+			goto CLEANUP;
+		}
 	}
 
 	yyjson_mut_doc *doc = yyjson_mut_doc_new(NULL);
@@ -89,23 +92,38 @@ int init_project() {
 	if (isExec) {
 		String *src_dir =
 			string_concat_cstr(str_arena, 2, string(project_dir), "/src");
-		dir_create_status = MAKE_DIR(string(src_dir));
+		if (!directory_exists(string(src_dir))) {
+			dir_create_status = MAKE_DIR(string(src_dir));
+		}
 	} else {
 		String *lib_dir =
 			string_concat_cstr(str_arena, 2, string(project_dir), "/lib");
-		dir_create_status = MAKE_DIR(string(lib_dir));
+		if (!directory_exists(string(lib_dir))) {
+			dir_create_status = MAKE_DIR(string(lib_dir));
+		}
 	}
 
 	if (dir_create_status != 0) {
 		ret = 1;
 		goto CLEANUP;
 	}
-	dir_create_status = MAKE_DIR(string(
-		string_concat_cstr(str_arena, 2, string(project_dir), "/include")));
-	dir_create_status = MAKE_DIR(string(
-		string_concat_cstr(str_arena, 2, string(project_dir), "/static")));
-	dir_create_status = MAKE_DIR(string(
-		string_concat_cstr(str_arena, 2, string(project_dir), "/shared")));
+
+	char *init_incl_dir = string(
+		string_concat_cstr(str_arena, 2, string(project_dir), "/include"));
+	char *init_static_dir = string(
+		string_concat_cstr(str_arena, 2, string(project_dir), "/static"));
+	char *init_shared_dir = string(
+		string_concat_cstr(str_arena, 2, string(project_dir), "/shared"));
+
+	if (!directory_exists(init_incl_dir)) {
+		dir_create_status = MAKE_DIR(init_incl_dir);
+	}
+	if (!directory_exists(init_static_dir)) {
+		dir_create_status = MAKE_DIR(init_static_dir);
+	}
+	if (!directory_exists(init_shared_dir)) {
+		dir_create_status = MAKE_DIR(init_shared_dir);
+	}
 
 	if (dir_create_status != 0) {
 		ret = 1;
@@ -119,18 +137,23 @@ int init_project() {
 			isExec ? "./src/main.cpp"
 				   : string(string_concat_cstr(str_arena, 3, "./lib/",
 											   string(project_name), ".cpp"));
-		file_create_status = create_append_file(
-			file_name, "#include <iostream>\n\nint main() "
-					   "{\n\tstd::cout << \"Hello, World!\" << std::endl;\n}");
+		if (!file_exists(file_name)) {
+			file_create_status = create_append_file(
+				file_name,
+				"#include <iostream>\n\nint main() "
+				"{\n\tstd::cout << \"Hello, World!\" << std::endl;\n}");
+		}
 
 		if (file_create_status == 1) {
 			ret = 1;
 			goto CLEANUP;
 		}
-		file_create_status = create_append_file(
-			string(string_concat_cstr(str_arena, 3, "./include/",
-									  string(project_name), ".hpp")),
-			"");
+		char *header_file = string(string_concat_cstr(
+			str_arena, 3, "./include/", string(project_name), ".hpp"));
+
+		if (!file_exists(header_file)) {
+			file_create_status = create_append_file(header_file, "");
+		}
 
 		if (file_create_status == 1) {
 			ret = 1;
@@ -141,23 +164,28 @@ int init_project() {
 		break;
 	}
 	default: {
-		char *file_name;
-		file_name =
+		char *file_name =
 			isExec ? "./src/main.c"
 				   : string(string_concat_cstr(str_arena, 3, "./lib/",
 											   string(project_name), ".c"));
-		file_create_status =
-			create_append_file(file_name, "#include <stdio.h>\n\nint main() "
-										  "{\n\tprintf(\"Hello, World!\");\n}");
+		if (!file_exists(file_name)) {
+			file_create_status = create_append_file(
+				file_name, "#include <stdio.h>\n\nint main() "
+						   "{\n\tprintf(\"Hello, World!\");\n}");
+		}
 
 		if (file_create_status == 1) {
 			ret = 1;
 			goto CLEANUP;
 		}
-		file_create_status = create_append_file(
-			string(string_concat_cstr(str_arena, 3, "./include/",
-									  string(project_name), ".h")),
-			"");
+
+		char *header_file = string(string_concat_cstr(
+			str_arena, 3, "./include/", string(project_name), ".h"));
+
+		if (!file_exists(header_file)) {
+			file_create_status = create_append_file(header_file, "");
+		}
+
 		if (file_create_status == 1) {
 			ret = 1;
 			goto CLEANUP;
@@ -167,6 +195,9 @@ int init_project() {
 		break;
 	}
 	}
+
+	printf("[✓] Flint project '%s' successfully initiated\n",
+		   string(project_name));
 	generate_compile_commands();
 
 CLEANUP:
@@ -219,6 +250,9 @@ String *build_project(Arena *global_str_arena) {
 	yyjson_val *dep_arr = yyjson_obj_get(root, "dependencies");
 	yyjson_val *compiler_path = yyjson_obj_get(root, "compiler_path");
 	yyjson_val *executable = yyjson_obj_get(root, "executable");
+	yyjson_val *version = yyjson_obj_get(root, "version");
+
+	char *version_str = arena_strdup(str_arena, yyjson_get_str(version));
 
 	bool isExec = yyjson_get_bool(executable);
 
@@ -337,7 +371,7 @@ String *build_project(Arena *global_str_arena) {
 	String *lib_links =
 		get_flags(str_arena, root, string_from(str_arena, "lib"));
 
-	yyjson_doc_free(doc);
+	// yyjson_doc_free(doc);
 
 	create_append_err = create_append_file("./build/.cache/compile.rsp",
 										   string(response_content));
@@ -352,6 +386,8 @@ String *build_project(Arena *global_str_arena) {
 		vector_free(shared_file_arr);
 		goto CLEANUP;
 	}
+
+	bool require_version_update = false;
 
 	for (int i = 0; i < length(src_file_arr); i++) {
 		const char *base_name =
@@ -368,16 +404,23 @@ String *build_project(Arena *global_str_arena) {
 
 		bool need_recompile = false;
 
+		char *current_version = read_current_version_from_file(str_arena);
+
 		if (obj_time == 0 || src_time > obj_time) {
 			need_recompile = true;
 		} else if (are_headers_newer(string(d_file), obj_time)) {
 			need_recompile = true;
+		} else if (STR_CMP(version_str, current_version) != 0) {
+			need_recompile = true;
+			require_version_update = true;
 		}
 
 		if (need_recompile) {
-			cmd_err = system(string(string_concat_cstr(
-				str_arena, 5, string(compiler), " @./build/.cache/compile.rsp ",
-				at(char *, src_file_arr, i), " -o ", string(obj_file))));
+			char *compilation_command = string(string_concat_cstr(
+				str_arena, 7, string(compiler), " -DVERSION=\\\"", version_str,
+				"\\\" @./build/.cache/compile.rsp ",
+				at(char *, src_file_arr, i), " -o ", string(obj_file)));
+			cmd_err = system(compilation_command);
 			if (cmd_err) {
 				fprintf(stderr, "Error encountered at compilation\n");
 				vector_free(src_file_arr);
@@ -475,8 +518,15 @@ String *build_project(Arena *global_str_arena) {
 		printf("[✓] Libraries ganerated\n");
 		vector_free(header_vec);
 	}
+	if (require_version_update) {
+		update_version_file(version_str);
+	}
+	// generate_compile_commands();
 
 CLEANUP:
+	if (doc) {
+		yyjson_doc_free(doc);
+	}
 	arena_free(&str_arena);
 	return output;
 }
