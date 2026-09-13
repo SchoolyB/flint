@@ -6,6 +6,8 @@ REPO_URL="https://github.com/mainak55512/flint.git"
 
 ORIGINAL_DIR="$(pwd)"
 
+VERSION="v0.5.0"
+
 echo "* Checking dependencies..."
 
 if ! command -v git >/dev/null 2>&1; then
@@ -54,11 +56,12 @@ $COMPILER \
   -fstack-protector-strong \
   -D_FORTIFY_SOURCE=2 \
   -Wno-unused-result \
+  -DVERSION="$VERSION"\
   -I./include \
   -I./deps/arena/include \
   -I./deps/CString/include \
   -I./deps/container/include \
-  -I./deps/yyjson/include \
+  -I./deps/yyjson/src \
   ./deps/arena/lib/arena.c \
   ./deps/CString/lib/cstring.c \
   ./deps/container/lib/cvector.c \
