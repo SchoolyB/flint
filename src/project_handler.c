@@ -1,4 +1,3 @@
-#include "yyjson.h"
 #include <flint.h>
 
 int check_available_archiever(String *cmd) {
@@ -46,18 +45,18 @@ int init_project() {
 	printf("=============================\n");
 	printf("Bootstrapping New Project\n");
 	printf("=============================\n");
-	printf("? Project Name: ");
+	printf("[?] Project Name: ");
 	project_name = string_trim(str_arena, string_get(str_arena));
 
 	project_dir = string_from(str_arena, ".");
 
-	printf("? Language (c/c++) [default: c]: ");
+	printf("[?] Language (c/c++) [default: c]: ");
 	project_lang = string_trim(str_arena, string_get(str_arena));
 
-	printf("? Project type (exec/lib) [default: exec]: ");
+	printf("[?] Project type (exec/lib) [default: exec]: ");
 	project_type = string_trim(str_arena, string_get(str_arena));
 
-	printf("? Compiler path [default: gcc]: ");
+	printf("[?] Compiler path [default: gcc]: ");
 	compiler_path = string_trim(str_arena, string_get(str_arena));
 
 	if (STR_CMP(string(compiler_path), "") == 0) {
@@ -206,7 +205,7 @@ CLEANUP:
 }
 
 String *build_project(Arena *global_str_arena) {
-	printf("[✓] Compilation started\n");
+	printf("[+] Compilation started\n");
 	String *command;
 	Arena *str_arena = arena_init(1024);
 

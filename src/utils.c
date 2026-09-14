@@ -240,6 +240,30 @@ void set_add(Vector *v, char *elem) {
 	}
 }
 
+bool set_remove(Vector **v, char *elem) {
+	if (!v || !*v)
+		return false;
+
+	if (!set_contains(*v, elem)) {
+		return false;
+	}
+
+	Vector *old_v = *v;
+	Vector *new_v = vector_init(char *);
+
+	int len = length(old_v);
+	for (int i = 0; i < len; i++) {
+		char *item = at(char *, old_v, i);
+		if (STR_CMP(item, elem) != 0) {
+			append(char *, new_v, item);
+		}
+	}
+
+	*v = new_v;
+	vector_free(old_v);
+	return true;
+}
+
 bool check_if_dep_path(const char *str) {
 	size_t len_prefix = strlen("deps");
 	size_t len_str = strlen(str);

@@ -71,6 +71,9 @@ int cli(int argc, char *argv[], Arena *global_str_arena) {
 	} else if (STR_CMP(opt, "add") == 0) {
 		add_library(argv[2]);
 		return 0;
+	} else if (STR_CMP(opt, "remove") == 0) {
+		remove_library(argv[2]);
+		return 0;
 	} else if (STR_CMP(opt, "add-lib") == 0) {
 		add_local_lib(argc - 2, argv + 2);
 		return 0;

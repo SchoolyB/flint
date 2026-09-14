@@ -1,4 +1,3 @@
-#include "yyjson.h"
 #include <flint.h>
 
 void update_package_file(yyjson_mut_doc *package) {
@@ -198,7 +197,7 @@ LibDetails *clone_lib(Arena *arena, char *libURL, const char *hash) {
 	char *target_dir =
 		string(string_concat_cstr(arena, 2, "./deps/", repo_name));
 	char *sink_path = ">/dev/null 2>&1";
-	printf("Installing %s...\n", repo_name);
+	printf("[+] Installing %s...\n", repo_name);
 	// printf("HASH: %s\n", hash);
 	String *command;
 	if (STR_CMP(hash, "") == 0) {
@@ -229,10 +228,10 @@ LibDetails *clone_lib(Arena *arena, char *libURL, const char *hash) {
 	lib_details->version = fetched_version;
 	lib_details->hash = ref_hash;
 
-	printf("Library: %s\n", lib_details->repo_name);
-	printf("Version: %s\n", lib_details->version);
-	printf("Hash: %s\n", lib_details->hash);
-	printf("Done!\n");
+	printf("[*] Library: %s\n", lib_details->repo_name);
+	printf("[*] Version: %s\n", lib_details->version);
+	printf("[*] Hash: %s\n", lib_details->hash);
+	printf("[✓] Done!\n");
 
 	remove_directory(arena,
 					 string(string_concat_cstr(arena, 2, target_dir, "/.git")));
@@ -276,10 +275,10 @@ LibDetails *clone_lib_hashed(Arena *arena, const char *libURL,
 	lib_details->version = tag;
 	lib_details->hash = (char *)ref_hash;
 
-	printf("Library: %s\n", lib_details->repo_name);
-	printf("Version: %s\n", lib_details->version);
-	printf("Hash: %s\n", lib_details->hash);
-	printf("Done!\n");
+	printf("[*] Library: %s\n", lib_details->repo_name);
+	printf("[*] Version: %s\n", lib_details->version);
+	printf("[*] Hash: %s\n", lib_details->hash);
+	printf("[✓] Done!\n");
 	remove_directory(arena,
 					 string(string_concat_cstr(arena, 2, target_dir, "/.git")));
 	return lib_details;
@@ -664,4 +663,92 @@ void fetch_library(Vector *v, char *libURL, yyjson_mut_val *sync_src,
 	yyjson_doc_free(dep_doc);
 	arena_free(&str_arena);
 	return;
+}
+
+void update_library(char *libURL) {}
+
+void remove_library_partial(char *libURL) {
+	Arena *arena = arena_init(1024);
+
+	char *repo_name = get_repo_name(arena, libURL);
+	// char *url = get_modified_url(arena, libURL);
+
+	yyjson_read_err err;
+	yyjson_doc *package = yyjson_read_file("./deps/.package", 0, NULL, &err);
+	yyjson_mut_doc *package_mut = yyjson_doc_mut_copy(package, NULL);
+	yyjson_doc_free(package);
+	yyjson_mut_val *root = yyjson_mut_doc_get_root(package_mut);
+	// yyjson_mut_val *package_arr = yyjson_mut_arr(package_mut);
+	yyjson_mut_val *package_arr = yyjson_mut_obj_get(root, "packages");
+	Vector *set = vector_init(char *);
+
+	yyjson_mut_val *val;
+	size_t idx, max;
+
+	yyjson_mut_arr_foreach(package_arr, idx, max, val) {
+		if (STR_CMP(yyjson_mut_get_str(val), libURL) != 0) {
+			set_add(set, (char *)yyjson_mut_get_str(val));
+		}
+	}
+
+	yyjson_mut_arr_clear(package_arr);
+
+	for (int i = 0; i < length(set); i++) {
+		char *item = at(char *, set, i);
+		yyjson_mut_arr_add_str(package_mut, package_arr, item);
+	}
+
+	/*
+	yyjson_write_err werr;
+	yyjson_write_flag flg = YYJSON_WRITE_PRETTY | YYJSON_WRITE_ESCAPE_UNICODE;
+	if (!yyjson_mut_write_file("./deps/.package", package_mut, flg, NULL,
+							   &werr)) {
+		fprintf(stderr, "Write error: %s\n", werr.msg);
+	}
+	*/
+	update_package_file(package_mut);
+
+	remove_directory(
+		arena, string(string_concat_cstr(arena, 2, "./deps/", repo_name)));
+
+	yyjson_mut_doc_free(package_mut);
+	arena_free(&arena);
+}
+
+void remove_library(char *repo_name) {
+	yyjson_read_err err;
+	yyjson_doc *config = yyjson_read_file("./composition.json", 0, NULL, &err);
+	yyjson_mut_doc *config_mut = yyjson_doc_mut_copy(config, NULL);
+	yyjson_doc_free(config);
+	yyjson_mut_val *root = yyjson_mut_doc_get_root(config_mut);
+
+	yyjson_mut_val *dependencies = yyjson_mut_obj_get(root, "dependencies");
+
+	yyjson_mut_val *element = yyjson_mut_obj_get(dependencies, repo_name);
+
+	char *repo_url = NULL;
+
+	if (element && yyjson_mut_is_obj(element)) {
+		repo_url =
+			(char *)yyjson_mut_get_str(yyjson_mut_obj_get(element, "remote"));
+	} else {
+		printf("[x] No dependency named '%s' found\n", repo_name);
+		return;
+	}
+
+	printf("[+] Removing '%s'...\n", repo_name);
+
+	remove_library_partial(repo_url);
+
+	yyjson_mut_obj_remove_key(dependencies, repo_name);
+
+	yyjson_write_err werr;
+	yyjson_write_flag flg = YYJSON_WRITE_PRETTY | YYJSON_WRITE_ESCAPE_UNICODE;
+	if (!yyjson_mut_write_file("./composition.json", config_mut, flg, NULL,
+							   &werr)) {
+		fprintf(stderr, "Write error: %s\n", werr.msg);
+	}
+
+	yyjson_mut_doc_free(config_mut);
+	printf("[✓] Done!\n");
 }
