@@ -250,7 +250,7 @@ LibDetails *clone_lib(Arena *arena, char *libURL, const char *hash) {
 	printf("[*] Library: %s\n", lib_details->repo_name);
 	printf("[*] Version: %s\n", lib_details->version);
 	printf("[*] Hash: %s\n", lib_details->hash);
-	printf("[✓] Done!\n");
+	printf("[✓] Done!\n\n");
 
 	remove_directory(arena,
 					 string(string_concat_cstr(arena, 2, target_dir, "/.git")));
@@ -297,7 +297,7 @@ LibDetails *clone_lib_hashed(Arena *arena, const char *libURL,
 	printf("[*] Library: %s\n", lib_details->repo_name);
 	printf("[*] Version: %s\n", lib_details->version);
 	printf("[*] Hash: %s\n", lib_details->hash);
-	printf("[✓] Done!\n");
+	printf("[✓] Done!\n\n");
 	remove_directory(arena,
 					 string(string_concat_cstr(arena, 2, target_dir, "/.git")));
 	return lib_details;
@@ -684,8 +684,6 @@ void fetch_library(Vector *v, char *libURL, yyjson_mut_val *sync_src,
 	return;
 }
 
-void update_library(char *libURL) {}
-
 void remove_library_partial(char *libURL) {
 	Arena *arena = arena_init(1024);
 
@@ -770,20 +768,6 @@ void remove_library(char *repo_name) {
 	char *search_str =
 		string(string_concat_cstr(local_arena, 2, "deps/", repo_name));
 
-	/*
-	if (yyjson_mut_is_arr(include_arr)) {
-		size_t idx, max;
-		yyjson_mut_val *val;
-
-		yyjson_mut_arr_foreach(include_arr, idx, max, val) {
-			const char *str = yyjson_mut_get_str(val);
-			if (starts_with((char *)str, search_str)) {
-				yyjson_mut_arr_remove(include_arr, idx);
-				break;
-			}
-		}
-	}
-	*/
 	remove_arr_entry(include_arr, search_str);
 	remove_arr_entry(src_arr, search_str);
 	remove_arr_entry(static_lib_arr, search_str);

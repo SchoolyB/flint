@@ -93,6 +93,13 @@ flint sync
 ```
 **N.B.** compositions are/will be available in [Flint Cherts](https://mainak55512.github.io/flint-cherts/compositions/)
 
+
+### Remove a Dependency
+
+```bash
+flint remove <repo name>
+```
+
 ### Build
 
 ```bash

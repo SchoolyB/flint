@@ -79,7 +79,6 @@ char *get_tag_from_hash(Arena *arena, const char *target_dir,
 LibDetails *clone_lib_hashed(Arena *arena, const char *libURL,
 							 const char *ref_hash);
 void add_library(char *libURL);
-void update_library(char *libURL);
 void remove_library_partial(char *libURL);
 void remove_library(char *repo_name);
 void run_project(Arena *global_str_arena);

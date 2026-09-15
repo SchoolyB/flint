@@ -240,6 +240,7 @@ void set_add(Vector *v, char *elem) {
 	}
 }
 
+/*
 bool set_remove(Vector **v, char *elem) {
 	if (!v || !*v)
 		return false;
@@ -263,6 +264,7 @@ bool set_remove(Vector **v, char *elem) {
 	vector_free(old_v);
 	return true;
 }
+	*/
 
 bool check_if_dep_path(const char *str) {
 	size_t len_prefix = strlen("deps");
