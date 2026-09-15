@@ -38,7 +38,7 @@ First off, thank you for considering contributing to flint! 🎉 We appreciate y
 
 ### Contributing Code
 
-To add new chert compositions please create an issue [here](https://github.com/flint-cherts/issues/new) and create a pull request [here](https://github.com/mainak55512/flint-cherts/pull).
+To add new chert compositions please create an issue [here](https://github.com/mainak55512/flint-cherts/issues/new) and create a pull request [here](https://github.com/mainak55512/flint-cherts/pull).
 
 
 If you have any questions or need help, feel free to open an issue or reach out to us!
