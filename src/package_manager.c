@@ -1,10 +1,29 @@
 #include <flint.h>
 
+bool starts_with(char *str, char *prefix) {
+	return strncmp(str, prefix, strlen(prefix)) == 0;
+}
+
 void update_package_file(yyjson_mut_doc *package) {
 	yyjson_write_err werr;
 	yyjson_write_flag flg = YYJSON_WRITE_PRETTY | YYJSON_WRITE_ESCAPE_UNICODE;
 	if (!yyjson_mut_write_file("./deps/.package", package, flg, NULL, &werr)) {
 		fprintf(stderr, "Write error: %s\n", werr.msg);
+	}
+}
+
+void remove_arr_entry(yyjson_mut_val *arr, char *search_str) {
+	if (yyjson_mut_is_arr(arr)) {
+		size_t idx, max;
+		yyjson_mut_val *val;
+
+		yyjson_mut_arr_foreach(arr, idx, max, val) {
+			const char *str = yyjson_mut_get_str(val);
+			if (starts_with((char *)str, search_str)) {
+				yyjson_mut_arr_remove(arr, idx);
+				break;
+			}
+		}
 	}
 }
 
@@ -716,6 +735,7 @@ void remove_library_partial(char *libURL) {
 }
 
 void remove_library(char *repo_name) {
+	Arena *local_arena = arena_init(1024);
 	yyjson_read_err err;
 	yyjson_doc *config = yyjson_read_file("./composition.json", 0, NULL, &err);
 	yyjson_mut_doc *config_mut = yyjson_doc_mut_copy(config, NULL);
@@ -742,6 +762,33 @@ void remove_library(char *repo_name) {
 
 	yyjson_mut_obj_remove_key(dependencies, repo_name);
 
+	yyjson_mut_val *include_arr = yyjson_mut_obj_get(root, "include_paths");
+	yyjson_mut_val *src_arr = yyjson_mut_obj_get(root, "src");
+	yyjson_mut_val *static_lib_arr = yyjson_mut_obj_get(root, "static_lib");
+	yyjson_mut_val *shared_lib_arr = yyjson_mut_obj_get(root, "shared_lib");
+
+	char *search_str =
+		string(string_concat_cstr(local_arena, 2, "deps/", repo_name));
+
+	/*
+	if (yyjson_mut_is_arr(include_arr)) {
+		size_t idx, max;
+		yyjson_mut_val *val;
+
+		yyjson_mut_arr_foreach(include_arr, idx, max, val) {
+			const char *str = yyjson_mut_get_str(val);
+			if (starts_with((char *)str, search_str)) {
+				yyjson_mut_arr_remove(include_arr, idx);
+				break;
+			}
+		}
+	}
+	*/
+	remove_arr_entry(include_arr, search_str);
+	remove_arr_entry(src_arr, search_str);
+	remove_arr_entry(static_lib_arr, search_str);
+	remove_arr_entry(shared_lib_arr, search_str);
+
 	yyjson_write_err werr;
 	yyjson_write_flag flg = YYJSON_WRITE_PRETTY | YYJSON_WRITE_ESCAPE_UNICODE;
 	if (!yyjson_mut_write_file("./composition.json", config_mut, flg, NULL,
@@ -750,5 +797,6 @@ void remove_library(char *repo_name) {
 	}
 
 	yyjson_mut_doc_free(config_mut);
+	arena_free(&local_arena);
 	printf("[✓] Done!\n");
 }
