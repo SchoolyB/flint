@@ -115,20 +115,23 @@ char *get_repo_name(Arena *arena, const char *git_url) {
 }
 
 char *get_version_number(Arena *arena, const char *git_url) {
-	if (!git_url)
+	if (!git_url) {
 		return NULL;
+	}
 
 	const char *at_symbol = strrchr(git_url, '@');
-	if (!at_symbol)
+	if (!at_symbol || *(at_symbol + 1) == '\0') {
 		return NULL;
+	}
 
 	const char *repo_start = at_symbol + 1;
 
 	size_t len = strlen(repo_start);
 
 	char *version_number = (char *)arena_alloc(arena, len + 1);
-	if (!version_number)
+	if (!version_number) {
 		return NULL;
+	}
 
 	strncpy(version_number, repo_start, len);
 	version_number[len] = '\0';
@@ -141,12 +144,14 @@ char *get_modified_url(Arena *arena, const char *git_url) {
 		return NULL;
 
 	const char *at_symbol = strrchr(git_url, '@');
-	if (!at_symbol)
+	if (!at_symbol || *(at_symbol + 1) == '\0') {
 		return NULL;
+	}
 	size_t len = at_symbol - git_url;
 	char *url = (char *)arena_alloc(arena, len + 1);
-	if (!url)
+	if (!url) {
 		return NULL;
+	}
 
 	strncpy(url, git_url, len);
 	url[len] = '\0';
@@ -219,51 +224,6 @@ char *get_tag_from_hash(Arena *arena, const char *target_dir,
 	return arena_strdup(arena, "unknown");
 }
 
-int remove_directory(Arena *arena, const char *path) {
-	DIR *d = opendir(path);
-	size_t path_len = strlen(path);
-	int r = -1;
-
-	if (d) {
-		struct dirent *p;
-		r = 0;
-
-		while (!r && (p = readdir(d))) {
-			int r2 = -1;
-			char *buf;
-			size_t len;
-
-			if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
-				continue;
-			}
-
-			len = path_len + strlen(p->d_name) + 2;
-			buf = arena_alloc(arena, len);
-
-			if (buf) {
-				struct stat statbuf;
-				snprintf(buf, len, "%s/%s", path, p->d_name);
-
-				if (!stat(buf, &statbuf)) {
-					if (S_ISDIR(statbuf.st_mode)) {
-						r2 = remove_directory(arena, buf);
-					} else {
-						r2 = unlink(buf);
-					}
-				}
-				// free(buf);
-			}
-			r = r2;
-		}
-		closedir(d);
-	}
-
-	if (!r) {
-		r = rmdir(path);
-	}
-	return r;
-}
-
 bool set_contains(Vector *v, char *elem) {
 
 	for (int i = 0; i < length(v); i++) {
@@ -280,38 +240,31 @@ void set_add(Vector *v, char *elem) {
 	}
 }
 
-int copy_file(const char *src_path, const char *dest_path) {
-	FILE *src = fopen(src_path, "rb");
-	if (src == NULL) {
-		perror("Error opening source file");
-		return -1;
+/*
+bool set_remove(Vector **v, char *elem) {
+	if (!v || !*v)
+		return false;
+
+	if (!set_contains(*v, elem)) {
+		return false;
 	}
 
-	FILE *dest = fopen(dest_path, "wb");
-	if (dest == NULL) {
-		perror("Error opening/creating destination file");
-		fclose(src);
-		return -1;
-	}
+	Vector *old_v = *v;
+	Vector *new_v = vector_init(char *);
 
-	char buffer[BUFFER_SIZE];
-
-	size_t bytes_read;
-
-	while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, src)) > 0) {
-		size_t bytes_written = fwrite(buffer, 1, bytes_read, dest);
-		if (bytes_written < bytes_read) {
-			perror("Error writing to destination file");
-			fclose(src);
-			fclose(dest);
-			return -1;
+	int len = length(old_v);
+	for (int i = 0; i < len; i++) {
+		char *item = at(char *, old_v, i);
+		if (STR_CMP(item, elem) != 0) {
+			append(char *, new_v, item);
 		}
 	}
 
-	fclose(src);
-	fclose(dest);
-	return 0;
+	*v = new_v;
+	vector_free(old_v);
+	return true;
 }
+	*/
 
 bool check_if_dep_path(const char *str) {
 	size_t len_prefix = strlen("deps");

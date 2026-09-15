@@ -1,7 +1,7 @@
 {
     "project_name": "flint",
     "project_language": "c",
-    "version": "0.3.0",
+    "version": "v0.5.0",
     "compiler_path": "/usr/bin/clang-18",
     "executable": true,
     "flags":[        
@@ -16,7 +16,7 @@
         "deps/CString/include",
         "deps/arena/include",
         "deps/container/include",
-        "deps/yyjson/include"
+        "deps/yyjson/src"
     ],
     "src": [
         "src",
@@ -29,15 +29,15 @@
     "shared_lib": ["shared"],
     "dependencies": {
         "arena": {
-            "version": "0.1.1",
+            "version": "v0.1.1",
             "remote": "https://github.com/mainak55512/arena"
         },
         "CString": {
-            "version": "0.1.1",
+            "version": "v0.1.1",
             "remote": "https://github.com/mainak55512/CString"
         },
         "container": {
-            "version": "0.1.1",
+            "version": "v0.1.1",
             "remote": "https://github.com/mainak55512/container"
         },
         "yyjson": {
