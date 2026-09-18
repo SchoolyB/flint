@@ -15,6 +15,15 @@ Flint simplifies C/C++ development by eliminating complex build scripts. It fetc
 
 ---
 
+## Demo
+
+<div align="center">
+  <br />
+  <img src="assets/demo.gif" alt="Flint Terminal Demo" width="85%" />
+  <p><sub><i>Flint initializing a workspace, adding dependencies, and running a build.</i></sub></p>
+  <br />
+</div>
+
 ## Features
 
 - **Git-Native Package Management:** Fetch dependencies directly into your project using standard Git repositories.
