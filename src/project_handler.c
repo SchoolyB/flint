@@ -42,9 +42,7 @@ int init_project() {
 	}
 
 	str_arena = arena_init(1024);
-	printf("=============================\n");
-	printf("Bootstrapping New Project\n");
-	printf("=============================\n");
+	printf("[+] Bootstrapping New Project...\n");
 	printf("[?] Project Name: ");
 	project_name = string_trim(str_arena, string_get(str_arena));
 
