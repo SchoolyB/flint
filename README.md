@@ -48,7 +48,7 @@ Flint simplifies C/C++ development by eliminating complex build scripts. It fetc
 Install Flint via the official one-liner script:
 
 ```bash
-curl -fsSL -H "Accept: application/vnd.github.v3.raw" [https://api.github.com/repos/mainak55512/flint/contents/build.sh](https://api.github.com/repos/mainak55512/flint/contents/build.sh) | bash
+curl -fsSL -H "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/mainak55512/flint/contents/build.sh | bash
 
 ```
 
