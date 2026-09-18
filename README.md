@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/flint.png" alt="Flint Logo" width="220">
+  <img src="./assets/flint.png" alt="Flint Logo" width="480">
   <h1>Flint</h1>
   <p><b>A minimalist, Git-native build system & package manager for C/C++</b></p>
 
