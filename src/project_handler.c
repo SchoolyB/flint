@@ -37,7 +37,7 @@ int init_project() {
 	ret = 0;
 
 	if (file_exists("./composition.json")) {
-		printf("Flint Chert already initiated!");
+		printf("[!] Flint Chert already initiated!");
 		return ret;
 	}
 
