@@ -1,112 +1,169 @@
 <div align="center">
-  <img src="./assets/flint.png" alt="Flint Logo">
+  <img src="./assets/flint.png" alt="Flint Logo" width="220">
+  <h1>Flint</h1>
+  <p><b>A minimalist, Git-native build system & package manager for C/C++</b></p>
+
+  <a href="https://mainak55512.github.io/flint-cherts/"><strong>CLI Documentation</strong></a> •
+  <a href="https://mainak55512.github.io/flint-cherts/compositions/"><strong>Chert Compositions</strong></a>
 </div>
 
-# Flint
+---
 
-**Disclaimer: This project is in BETA stage and only available for Linux, use with caution.**
+> ⚠️ **Disclaimer:** Flint is currently in **BETA** and natively available for **Linux**. Use with caution in production environments.
 
-Flint is an experimental build system and package manager for C/C++ projects. It aims to simplify the development workflow by managing dependencies directly through Git and automating the compilation process via a single JSON configuration file.
-Flint is compatible with GCC & Clang compilers.
+Flint simplifies C/C++ development by eliminating complex build scripts. It fetches dependencies directly via Git, manages build configurations through a single `composition.json` manifest, and orchestrates GCC/Clang compilers automatically.
 
-**NOTE:** 
+---
 
-CLI Docs available here: [Flint](https://mainak55512.github.io/flint-cherts/)
+## Features
 
-Compositions of the Cherts(dependencies) are/will be updated here: [Flint Cherts](https://mainak55512.github.io/flint-cherts/compositions/)
+- **Git-Native Package Management:** Fetch dependencies directly into your project using standard Git repositories.
+- **Version & Commit Pinning:** Lock dependencies by tag or commit hash for reproducible builds.
+- **Manifest-First (`composition.json`):** Single JSON file manages compiler options, include paths, and link flags—no complex Makefile or CMake scripts required.
+- **Chert Compositions:** Compatibility layer that allows third-party libraries without a `composition.json` to work out of the box.
+- **Global `VERSION` Macro:** Automatically injects your project's version directly into your source code during compilation.
+- **Zero-Config Execution:** Build and instantly execute binaries using `flint run`.
 
-## Installation
-**Prerequisits:**
+---
 
-- GCC/Clang compiler chain
-- GIT
+## Quick Start
 
-Run the following command in terminal:
+### Prerequisites
+
+- **OS:** Linux
+- **Compiler:** GCC or Clang
+- **Tools:** Git
+
+### Installation
+
+Install Flint via the official one-liner script:
 
 ```bash
-curl -fsSL -H "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/mainak55512/flint/contents/build.sh | bash
+curl -fsSL -H "Accept: application/vnd.github.v3.raw" [https://api.github.com/repos/mainak55512/flint/contents/build.sh](https://api.github.com/repos/mainak55512/flint/contents/build.sh) | bash
+
 ```
+
+---
 
 ## Project Structure
 
-Flint expects a specific directory layout to function correctly:
+Flint uses a clean, conventional directory structure:
 
-* **src/**: All local project source files (.c, .cpp).
-* **include/**: Local header files (.h, .hpp).
-* **deps/**: External libraries (managed by Flint).
-* **static/**: Contains all the static library (.a) files.
-* **shared/**: Contains all the dynamic/shared (.so) libraries.
-* **composition.json**: The project manifest.
-
-## How it Works
-
-Currently, Flint uses a "manifest-first" approach:
-
-1. **Git Integration**: When a library is added, flint clones the repository into the `deps/` directory.
-2. **Strict Manifest Requirement**: For a dependency to be compatible, it **must** contain its own `composition.json` file. Flint reads this file to understand which directories to include and compile. EDIT: Libraries can be added through chert compositions now (check [Flint Cherts](https://mainak55512.github.io/flint-cherts/compositions/)).
-3. **Compilation**: The tool aggregates all source files and include paths from the main project and all dependencies to trigger the local compiler.
-
-## composition.json Structure
-
-```json
-{
-    "project_name": "example_project",
-    "project_language": "c",
-    "version": "0.1.0",
-    "compiler_path": "/usr/bin/gcc",
-    "executable": true,
-    "flags": [],
-    "lib_links": [],
-    "include_paths": ["include"],
-    "src": ["src"],
-    "dependencies": {
-        "example_lib": {
-            "version": "1.0.0",
-            "remote": "https://github.com/user/example_lib"
-        }
-    }
-}
+```text
+my_project/
+├── src/                # Source files (.c, .cpp)
+├── include/            # Local header files (.h, .hpp)
+├── deps/               # External dependencies (Managed by Flint)
+├── static/             # Static library files (.a)
+├── shared/             # Dynamic/Shared library files (.so)
+└── composition.json    # Project manifest & build configuration
 
 ```
 
-## Usage
+---
 
-### Initialize a Project
+## Usage & Workflow
+
+### 1. Initialize a Project
+
+Create a new Flint workspace:
 
 ```bash
 flint init
 
 ```
 
-### Add a Dependency
+### 2. Add Dependencies
 
-(The remote repository must contain a `composition.json` file)
+Add a library directly from a Git URL:
 
 ```bash
 flint add <git_remote_url>@<version>
 
 ```
-or
-Add the cherts composition in the `dependencies` section in composition.json and run
+
+Alternatively, add third-party [Chert Compositions](https://mainak55512.github.io/flint-cherts/compositions/?utm_source=gemini) directly into the `dependencies` block of your `composition.json` and sync:
+
 ```bash
 flint sync
+
 ```
-**N.B.** compositions are/will be available in [Flint Cherts](https://mainak55512.github.io/flint-cherts/compositions/)
 
+### 3. Remove a Dependency
 
-### Remove a Dependency
+Un-track and remove a managed dependency:
 
 ```bash
-flint remove <repo name>
+flint remove <repo_name>
+
 ```
 
-### Build
+### 4. Build and Run
+
+Compile your project:
 
 ```bash
 flint build
 
 ```
-or directly run with
+
+Or compile and execute immediately in one step:
+
 ```bash
 flint run
+
+```
+
+---
+
+## 📄 `composition.json` Specification
+
+The project manifest controls compilation flags, paths, and dependency tracking:
+
+```json
+{
+  "project_name": "example_project",
+  "project_language": "c",
+  "version": "0.1.0",
+  "compiler_path": "/usr/bin/gcc",
+  "executable": true,
+  "flags": [],
+  "lib_links": [],
+  "include_paths": ["include"],
+  "src": ["src"],
+  "dependencies": {
+    "example_lib": {
+      "version": "1.0.0",
+      "remote": "[https://github.com/user/example_lib](https://github.com/user/example_lib)"
+    }
+  }
+}
+
+```
+
+---
+
+## How Flint Compares
+
+| Feature | Flint | CMake + CPM / FetchContent | Conan / vcpkg |
+| --- | --- | --- | --- |
+| **Setup Complexity** | Zero-config (`flint init`) | High (DSL scripting) | Medium (Profiles/Registries) |
+| **Dependency Resolution** | Git-native | Script-based | Central Binary Registry |
+| **Directory Structure** | Standardized | Freeform | Freeform |
+| **Manifest File** | `composition.json` | `CMakeLists.txt` | `conanfile.txt` / `vcpkg.json` |
+
+---
+
+## Documentation & Community
+
+* **CLI Reference:** [Flint CLI Docs](https://mainak55512.github.io/flint-cherts/)
+* **Chert Index:** [Flint Cherts Repository](https://mainak55512.github.io/flint-cherts/compositions/)
+* **Issues & Feedback:** [GitHub Issues](https://www.google.com/search?q=https://github.com/mainak55512/flint/issues)
+
+---
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for details.
+
 ```
