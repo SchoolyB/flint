@@ -116,7 +116,7 @@ flint run
 
 ---
 
-## 📄 `composition.json` Specification
+## `composition.json` Specification
 
 The project manifest controls compilation flags, paths, and dependency tracking:
 
@@ -158,7 +158,7 @@ The project manifest controls compilation flags, paths, and dependency tracking:
 
 * **CLI Reference:** [Flint CLI Docs](https://mainak55512.github.io/flint-cherts/)
 * **Chert Index:** [Flint Cherts Repository](https://mainak55512.github.io/flint-cherts/compositions/)
-* **Issues & Feedback:** [GitHub Issues](https://www.google.com/search?q=https://github.com/mainak55512/flint/issues)
+* **Issues & Feedback:** [GitHub Issues](https://github.com/mainak55512/flint/issues)
 
 ---
 
@@ -166,4 +166,3 @@ The project manifest controls compilation flags, paths, and dependency tracking:
 
 Distributed under the MIT License. See `LICENSE` for details.
 
-```
