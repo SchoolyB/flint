@@ -6,9 +6,12 @@
 <a href="https://mainak55512.github.io/flint-cherts/compositions/"><strong>Chert Index</strong></a>
 <a href="https://github.com/mainak55512/flint/issues"><strong>Report Issue</strong></a> 
 <br>
+  
 </div>
 <div align="center">
+  
 ![Platform](https://img.shields.io/badge/platform-Linux-blue?style=flat-square) ![Status](https://img.shields.io/badge/status-Beta-orange?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+
 </div>
 ---
 
