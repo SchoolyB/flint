@@ -57,7 +57,7 @@ Instead of writing hundreds of lines of complex `CMakeLists.txt` or Makefile glu
 Install via official script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mainak55512/flint/main/install.sh | sh
+curl -fsSL -H "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/mainak55512/flint/contents/build.sh | bash
 ```
 
 Or build from source:
