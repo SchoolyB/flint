@@ -123,7 +123,7 @@ my_project/
 ## How Flint Compares
 
 | Feature / Attribute | Flint | CMake + vcpkg | cmkr + FetchContent | Meson + WrapDB |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | Tool Architecture | Integrated Build System & PM | Meta-Build Generator + Standalone PM | Meta-Wrapper Generator (outputs CMakeLists.txt) | Meta-Build Generator + Package Resolver |
 | Runtime Dependencies | System git, gcc/clang | C++ runtime, git, build backend (ninja/make) | cmkr, CMake, git, build backend | Python 3, ninja, git |
 | Config Format | composition.json (JSON) | CMakeLists.txt + vcpkg.json (Custom DSL + JSON) | cmake.toml (TOML) | meson.build (Declarative DSL) |
