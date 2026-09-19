@@ -2,9 +2,8 @@
 <img src="./assets/flint.png" alt="Flint Logo" width="360">
 <h1>Flint</h1>
 <p><b>The Cargo experience for C/C++—minimalist, Git-native, and CMake-free.</b></p> 
-<a href="https://mainak55512.github.io/flint-cherts/"><strong>CLI Docs</strong></a>
-<a href="https://mainak55512.github.io/flint-cherts/compositions/"><strong>Chert Index</strong></a>
-<a href="https://github.com/mainak55512/flint/issues"><strong>Report Issue</strong></a> 
+<a href="https://mainak55512.github.io/flint-cherts/"><strong>CLI Docs</strong></a> | 
+<a href="https://mainak55512.github.io/flint-cherts/compositions/"><strong>Chert Compositions</strong></a>
 <br><br>
   
 </div>
@@ -123,17 +122,17 @@ my_project/
 
 ## How Flint Compares
 
-| Feature / Attribute | Flint | CMake + vcpkg | cmkr + FetchContent | Meson + WrapDB | XMake + Xrepo | Bazel |
-|---|---|---|---|---|---|---|
-| Tool Architecture | Integrated Build System & PM | Meta-Build Generator + Standalone PM | Meta-Wrapper Generator (outputs CMakeLists.txt) | Meta-Build Generator + Package Resolver | Integrated Build System & PM | Multi-language Distributed Build System |
-| Runtime Dependencies | System git, gcc/clang | C++ runtime, git, build backend (ninja/make) | cmkr, CMake, git, build backend | Python 3, ninja, git | Embedded Lua Engine, system compiler | Java Runtime Environment (JVM) |
-| Config Format | composition.json (JSON) | CMakeLists.txt + vcpkg.json (Custom DSL + JSON) | cmake.toml (TOML) | meson.build (Declarative DSL) | xmake.lua (Lua scripts) | BUILD / WORKSPACE (Starlark) |
-| Package Management Method | Git-native clones to deps/ via CLI (flint add) | Manifest/Port-tree repos & binary caching | CMake FetchContent (configure-time download) | Wrap files (.wrap) & WrapDB registry | Native Xrepo index + fallbacks (vcpkg/Conan) | Remote repositories & Bazel modules (Bzlmod) |
-| Non-Native Library Handling | Chert Compositions (custom specs for non-Flint repos) | vcpkg Port Overlay recipes | Requires manual CMake target wrapping | Meson Wrap subproject patches | Xrepo package build scripts | Custom Starlark rule definitions |
-| Incremental Build Engine | Native state/modification tracking | Delegated to backend (Ninja/Make) | Delegated to CMake backend | Delegated to Ninja | Native Lua task engine | Content-hash DAG dependency graph & cache |
-| Directory Model | Convention-over-configuration (src/, include/, deps/) | Fully explicit & customisable | Explicit & customisable | Explicit & customisable | Flexible / semi-conventional | Explicit package rule targets |
-| Platform Support | Linux only (Current) | Cross-Platform (Linux, macOS, Windows) | Cross-Platform (Linux, macOS, Windows) | Cross-Platform (Linux, macOS, Windows) | Cross-Platform (Linux, macOS, Windows) | Cross-Platform (Linux, macOS, Windows) |
-| Cross-Compilation | Flags passed to system compiler | Toolchain files (-DCMAKE_TOOLCHAIN_FILE) | Toolchain files via CMake | Cross-definition files (--cross-file) | Built-in CLI flags (--sdk, --plat) | Hermetic platform toolchains |
+| Feature / Attribute | Flint | CMake + vcpkg | cmkr + FetchContent | Meson + WrapDB |
+|---|---|---|---|---|---|
+| Tool Architecture | Integrated Build System & PM | Meta-Build Generator + Standalone PM | Meta-Wrapper Generator (outputs CMakeLists.txt) | Meta-Build Generator + Package Resolver |
+| Runtime Dependencies | System git, gcc/clang | C++ runtime, git, build backend (ninja/make) | cmkr, CMake, git, build backend | Python 3, ninja, git |
+| Config Format | composition.json (JSON) | CMakeLists.txt + vcpkg.json (Custom DSL + JSON) | cmake.toml (TOML) | meson.build (Declarative DSL) |
+| Package Management Method | Git-native clones to deps/ via CLI (flint add) | Manifest/Port-tree repos & binary caching | CMake FetchContent (configure-time download) | Wrap files (.wrap) & WrapDB registry |
+| Non-Native Library Handling | Chert Compositions (custom specs for non-Flint repos) | vcpkg Port Overlay recipes | Requires manual CMake target wrapping | Meson Wrap subproject patches |
+| Incremental Build Engine | Native state/modification tracking | Delegated to backend (Ninja/Make) | Delegated to CMake backend | Delegated to Ninja | 
+| Directory Model | Convention-over-configuration (src/, include/, deps/) | Fully explicit & customisable | Explicit & customisable | Explicit & customisable |
+| Platform Support | Linux only (Current) | Cross-Platform (Linux, macOS, Windows) | Cross-Platform (Linux, macOS, Windows) | Cross-Platform (Linux, macOS, Windows) |
+| Cross-Compilation | Flags passed to system compiler | Toolchain files (-DCMAKE_TOOLCHAIN_FILE) | Toolchain files via CMake | Cross-definition files (--cross-file) |
 
 
 ## Community & Support
