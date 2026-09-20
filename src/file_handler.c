@@ -1,3 +1,4 @@
+#include "yyjson.h"
 #include <flint.h>
 
 int create_append_file(char *file_path, char *content) {
@@ -82,19 +83,33 @@ void get_files_vec(Arena *str_arena, Vector *source_files, yyjson_val *root,
 		retrieve_type = string_clone(str_arena, file_type);
 	}
 
+	yyjson_val *excludes = yyjson_obj_get(root, "excludes");
+
 	yyjson_val *src_arr = yyjson_obj_get(root, string(retrieve_type));
 	if (yyjson_is_arr(src_arr)) {
 		yyjson_arr_iter iter;
 		yyjson_arr_iter_init(src_arr, &iter);
 		yyjson_val *val;
 		while ((val = yyjson_arr_iter_next(&iter))) {
+			Vector *src_temp_arr;
 
-			Vector *src_temp_arr = string_split_lines(
-				str_arena,
-				collect_files(
+			if (STR_CMP(string(retrieve_type), "src") == 0) {
+				src_temp_arr = remove_excludes(
+					string_split_lines(
+						str_arena,
+						collect_files(
+							str_arena,
+							string_from(str_arena, (char *)yyjson_get_str(val)),
+							string_from(str_arena, string(file_type)))),
+					excludes);
+			} else {
+				src_temp_arr = string_split_lines(
 					str_arena,
-					string_from(str_arena, (char *)yyjson_get_str(val)),
-					string_from(str_arena, string(file_type))));
+					collect_files(
+						str_arena,
+						string_from(str_arena, (char *)yyjson_get_str(val)),
+						string_from(str_arena, string(file_type))));
+			}
 			for (int i = 0; i < length(src_temp_arr); i++) {
 				char *elem = string(at(String *, src_temp_arr, i));
 				if (STR_CMP(elem, "") != 0) {

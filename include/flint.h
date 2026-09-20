@@ -56,7 +56,7 @@ void fetch_library(Vector *v, char *libURL, yyjson_mut_val *sync_src,
 				   yyjson_mut_val *sync_include_paths,
 				   yyjson_mut_val *sync_flags, yyjson_mut_val *sync_lib_links,
 				   yyjson_mut_val *sync_stat, yyjson_mut_val *sync_shared,
-				   bool sync, const char *hash);
+				   bool sync, const char *hash, yyjson_mut_val *sync_excludes);
 bool set_contains(Vector *v, char *elem);
 void set_add(Vector *v, char *elem);
 LibDetails *clone_lib(Arena *arena, char *libURL, const char *hash);
@@ -106,3 +106,4 @@ bool check_if_dep_path(const char *str);
 int remove_directory(Arena *arena, const char *path);
 char *read_current_version_from_file(Arena *arena);
 void update_version_file(char *version);
+Vector *remove_excludes(Vector *collected, yyjson_val *excludes);

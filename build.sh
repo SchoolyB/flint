@@ -6,7 +6,7 @@ REPO_URL="https://github.com/mainak55512/flint.git"
 
 ORIGINAL_DIR="$(pwd)"
 
-VERSION="v0.5.0"
+VERSION="v0.5.2"
 
 echo "* Checking dependencies..."
 

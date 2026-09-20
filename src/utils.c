@@ -1,3 +1,5 @@
+#include "container.h"
+#include "yyjson.h"
 #include <flint.h>
 
 const char *get_filename_without_path(const char *path) {
@@ -35,6 +37,29 @@ Vector *string_split(Arena *arena, String *str, char sep) {
 	}
 
 	return lines;
+}
+
+Vector *remove_excludes(Vector *collected, yyjson_val *excludes) {
+	Vector *vec = vector_init(String *);
+
+	for (int i = 0; i < length(collected); i++) {
+		bool present = false;
+		size_t idx = 0, max = 0;
+		yyjson_val *val;
+		yyjson_arr_foreach(excludes, idx, max, val) {
+			if (STR_CMP(string(at(String *, collected, i)),
+						yyjson_get_str(val)) == 0) {
+				present = true;
+				break;
+			}
+		}
+		if (!present) {
+			append(String *, vec, at(String *, collected, i));
+		}
+	}
+
+	vector_free(collected);
+	return vec;
 }
 
 Vector *string_split_lines(Arena *arena, String *str) {
