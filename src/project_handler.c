@@ -75,14 +75,6 @@ int init_project() {
 		printf("[!] Flint Chert already initiated!");
 		return ret;
 	}
-	if (!check_available_tool("git")) {
-		fprintf(stderr, "[!] Required tool 'git' was not found in PATH.\n");
-		return 1;
-	}
-	if (!check_available_tool("ar") && !check_available_tool("llvm-ar")) {
-		fprintf(stderr, "[!] Required tool 'ar' or 'llvm-ar' was not found in PATH.\n");
-		return 1;
-	}
 
 	str_arena = arena_init(1024);
 	printf("[+] Bootstrapping New Project...\n");
@@ -106,6 +98,17 @@ int init_project() {
 	if (!check_available_tool(string(compiler_path))) {
 		fprintf(stderr, "[!] Compiler '%s' was not found in PATH.\n",
 				string(compiler_path));
+		ret = 1;
+		goto CLEANUP;
+	}
+	if (!check_available_tool("git")) {
+		fprintf(stderr, "[!] Required tool 'git' was not found in PATH.\n");
+		ret = 1;
+		goto CLEANUP;
+	}
+	if (!check_available_tool("ar") && !check_available_tool("llvm-ar")) {
+		fprintf(stderr,
+				"[!] Required tool 'ar' or 'llvm-ar' was not found in PATH.\n");
 		ret = 1;
 		goto CLEANUP;
 	}
