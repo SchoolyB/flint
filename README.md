@@ -142,6 +142,21 @@ my_project/
 -   **Chert Packages:** [Flint Cherts Repository](https://mainak55512.github.io/flint-cherts/compositions/)
              
 -   **Bug Reports & Requests:** [GitHub Issues](https://github.com/mainak55512/flint/issues)
+
+### Package Discovery & Contributions
+
+When you create a new library project using **`flint`**, it is automatically designed to be modular and can be fetched directly by other projects via `flint add <repo_url>@<version>`.
+
+If you are working with a **legacy or existing third-party C/C++ library** that doesn't natively support `flint`, you can still use it by defining a chert composition (`composition.json`). 
+
+#### How to Contribute Legacy Libraries:
+We maintain a community repository of pre-made library compositions called **[flint-cherts](https://github.com/mainak55512/flint-cherts)**. 
+
+If you write a `chert composition` for a popular C/C++ library, contributions to `flint-cherts` are highly appreciated! 
+
+1. Check out the **[flint-cherts README Guide](https://github.com/mainak55512/flint-cherts)** to learn how to structure a `composition.json`.
+2. Submit a Pull Request with your library composition.
+3. Help the community seamlessly use legacy C/C++ packages without needing manual setup!
     
          
 ## License
