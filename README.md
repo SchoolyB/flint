@@ -9,7 +9,7 @@
 </div>
 <div align="center">
   
-![Platform](https://img.shields.io/badge/platform-Linux-blue?style=flat-square) ![Status](https://img.shields.io/badge/status-Beta-orange?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-POSIX-blue?style=flat-square) ![Status](https://img.shields.io/badge/status-Beta-orange?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
 </div>
 
