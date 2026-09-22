@@ -55,7 +55,7 @@ void print_version_details() {
 	printf("%s\n", art);
 	printf("Version: %s\n\n", STR(VERSION));
 	printf("Usage: flint <command> [args]\n");
-	printf("Commands: init, add, build, add-lib, add-flag, run, gen, "
+	printf("Commands: init, add, remove, build, add-lib, add-flag, run, gen, "
 		   "sync, deps\n");
 }
 
