@@ -56,7 +56,7 @@ Instead of writing hundreds of lines of complex `CMakeLists.txt` or Makefile glu
 Install via official script:
 
 ```bash
-curl -fsSL -H "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/mainak55512/flint/contents/build.sh | bash
+curl -fsSL -H "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/mainak55512/flint/contents/install.sh | bash
 ```
 
 Or build from source:
@@ -65,7 +65,7 @@ Bash
 
 ```
 git clone https://github.com/mainak55512/flint.git
-cd flint && ./build.sh
+cd flint && ./install.sh
 ```
 
 ### 2. Quick Workflow
@@ -113,7 +113,7 @@ my_project/
   "dependencies": {
     "example_lib": {
       "version": "1.0.0",
-      "remote": "[https://github.com/user/example_lib.git](https://github.com/user/example_lib.git)"
+      "remote": "https://github.com/user/example_lib.git"
     }
   }
 }

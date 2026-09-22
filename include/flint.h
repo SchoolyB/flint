@@ -107,3 +107,4 @@ int remove_directory(Arena *arena, const char *path);
 char *read_current_version_from_file(Arena *arena);
 void update_version_file(char *version);
 Vector *remove_excludes(Vector *collected, yyjson_val *excludes);
+void list_deps();

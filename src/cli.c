@@ -55,8 +55,8 @@ void print_version_details() {
 	printf("%s\n", art);
 	printf("Version: %s\n\n", STR(VERSION));
 	printf("Usage: flint <command> [args]\n");
-	printf("Commands: init, add, build, add-lib, add-flag, run, gen, "
-		   "sync\n");
+	printf("Commands: init, add, remove, build, add-lib, add-flag, run, gen, "
+		   "sync, deps\n");
 }
 
 int cli(int argc, char *argv[], Arena *global_str_arena) {
@@ -90,6 +90,9 @@ int cli(int argc, char *argv[], Arena *global_str_arena) {
 		return 0;
 	} else if (STR_CMP(opt, "sync") == 0) {
 		sync_dependency();
+		return 0;
+	} else if (STR_CMP(opt, "deps") == 0) {
+		list_deps();
 		return 0;
 	} else {
 		printf("Unknown command: %s\n", opt);
