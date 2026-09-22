@@ -883,3 +883,29 @@ void remove_library(char *repo_name) {
 	arena_free(&local_arena);
 	printf("[✓] Done!\n");
 }
+
+void list_deps() {
+	yyjson_read_err err;
+	yyjson_doc *config = yyjson_read_file("./composition.json", 0, NULL, &err);
+	if (!config) {
+		fprintf(stderr, "Failed to read composition.json: %s\n", err.msg);
+		return;
+	}
+	yyjson_val *root = yyjson_doc_get_root(config);
+	yyjson_val *dependencies = yyjson_obj_get(root, "dependencies");
+
+	if (!dependencies || yyjson_obj_size(dependencies) == 0) {
+		printf("[x] No dependencies found\n");
+		yyjson_doc_free(config);
+		return;
+	}
+
+	int idx = 0, max = 0;
+	yyjson_val *key, *val;
+	yyjson_obj_foreach(dependencies, idx, max, key, val) {
+		char *version = (char *)yyjson_get_str(yyjson_obj_get(val, "version"));
+		printf("[*] %s: %s\n", yyjson_get_str(key), version);
+	}
+
+	yyjson_doc_free(config);
+}
